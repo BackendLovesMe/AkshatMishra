@@ -27,6 +27,7 @@ import { PatnerRepository } from "./repository/patnerRepository";
 import { LoginService } from "./service/loginService";
 import { Types } from "aws-sdk/clients/acm";
 import { LoginRepository } from "./repository/loginRepository";
+import { connectDB } from "./config/MongoDBClient";
 
 //create container instance
 let container = new Container();
@@ -68,6 +69,16 @@ server.setConfig((app) => {
   app.use(helmet());
   app.use(bodyParser.json({ limit: "25mb" }));
   app.use(bodyParser.urlencoded({ limit: "25mb", extended: true }));
+  app.use(
+    cors({
+      origin: "http://localhost:1234", // Allow requests from your frontend
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowedHeaders: ["Content-Type", "Authorization"], // Allow Authorization header
+      credentials: true, // Allow cookies or authorization headers
+      preflightContinue: false
+    })
+  );
+
   app.use(function (request, response, next) {//jwt awth middleware
     console.log("In authorization function...");
     console.log(request.url);
@@ -99,15 +110,18 @@ server.setConfig((app) => {
         next();
     });
 });
+
+
+
   app.use(useragent.express());
   app.use(cookieParser());
   app.use(upload.fields([{ name: "profile_picture", maxCount: 1 },{ name: "vechile_picture", maxCount: 1 }])); //multer middleware for asset upload api
   //handle cors for request
-  app.use(cors());
+  //app.use(cors());
   app.use(cookieParser());
   app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With,Content-Type");
+    res.header("Access-Control-Allow-Headers");
     res.setHeader(
       "Access-Control-Allow-Methods",
       "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -115,8 +129,8 @@ server.setConfig((app) => {
     next();
   });
  
-
 });
+connectDB()
 
 //Centralized Exception Handling
 server.setErrorConfig((app) => {
@@ -144,12 +158,10 @@ process.on("rejectionHandled", (err) => {
 // salesforceClientInstance.oauthLogin();
 
 let app = server.build();
-const port = parseInt(process.env.PORT || "3000", 10); // Default to 8080 if PORT is not set
-const host = process.env.HOST || '0.0.0.0';
-app.listen(port,host,()=>{
-  console.log(
-    `Server Starting on : host  ${host}:port ${port}`
-  );
+// const port = parseInt(process.env.PORT || "3000", 10); // Default to 8080 if PORT is not set
+// const host = process.env.HOST || '0.0.0.0';
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server running on port 3000');
 }); //port allocation and server is listenning on this port
 
 exports = module.exports = app;

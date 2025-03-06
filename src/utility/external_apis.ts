@@ -10,7 +10,7 @@ export async function sendOtp(mobileNumber) {
   const accountSid = process.env.ACCOUNT_SID;
   const authToken = process.env.AUTH_TOKEN;
  // const messagingServiceSid = process.env.MESSAGING_SERVICE_SID;
-  // console.log("hihihih",accountSid,authToken,messagingServiceSid,otp,mobileNumber)
+  console.log("hihihih",accountSid,authToken,otp,mobileNumber)
   const client = twilio(accountSid, authToken);
   console.log("CHECKING WHATS WRONG", mobileNumber);
   try {
@@ -19,7 +19,7 @@ export async function sendOtp(mobileNumber) {
       body: `Your OTP is: ${otp}`,
       //messagingServiceSid,
       to: `+91${mobileNumber}`,
-      from: "+17756307074",
+      from: "+18482943762",
     });
     console.log(message);
     console.log(
